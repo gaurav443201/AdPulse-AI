@@ -3,7 +3,7 @@ import { Brand, Platform } from "../types";
 import { BRAND_GUIDELINES, PLATFORM_RULES } from "../constants";
 
 // Initialize Gemini Client
-// NOTE: Process.env.API_KEY is handled by the build environment/runtime
+// The API key must be obtained exclusively from the environment variable process.env.API_KEY
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 const MODEL_NAME = 'gemini-2.5-flash';
@@ -12,6 +12,13 @@ const MODEL_NAME = 'gemini-2.5-flash';
  * Parses a natural language user request into a structured Campaign object.
  */
 export const parseCampaignRequest = async (userInput: string, existingContext: any = {}) => {
+  if (!process.env.API_KEY) {
+    return {
+      conversationalResponse: "API Key is missing. Please check your deployment settings.",
+      missingInfo: []
+    };
+  }
+
   const schema: Schema = {
     type: Type.OBJECT,
     properties: {
